@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Disease Database</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .filters div {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .no-data {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Animal Disease Database</h1>
+
+    <div class="filters">
+        <!-- Species Filter -->
+        <div>
+            <label for="speciesTypeFilter">Select Species:</label>
+            <select id="speciesTypeFilter">
+                <option value="">-- Select Species --</option>
+                <option value="Terrestrial">Terrestrial</option>
+                <option value="Aquatic">Aquatic</option>
+            </select>
+        </div>
+        
+        <!-- Animal Category Filter (changes dynamically) -->
+        <div>
+            <label for="animalCategoryFilter">Select Animal Category:</label>
+            <select id="animalCategoryFilter" disabled>
+                <option value="">-- Select Animal Category --</option>
+            </select>
+        </div>
+
+        <!-- Zoonotic Filter -->
+        <div>
+            <label for="zoonoticFilter">Zoonotic:</label>
+            <select id="zoonoticFilter">
+                <option value="">-- Select Option --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+
+        <!-- Trade Impact Filter -->
+        <div>
+            <label for="tradeImpactFilter">Trade Impact:</label>
+            <select id="tradeImpactFilter">
+                <option value="">-- Select Option --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+
+        <!-- Disease Filter -->
+        <div>
+            <label for="diseaseFilter">Filter by Disease:</label>
+            <input type="text" id="diseaseFilter" placeholder="Enter disease name...">
+        </div>
+    </div>
+
+    <table id="animalTable">
+        <thead>
+            <tr>
+                <th>Species</th>
+                <th>Animal Category</th>
+                <th>Disease</th>
+                <th>Zoonotic</th>
+                <th>Trade Impact</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be populated here -->
+        </tbody>
+    </table>
+
+    <div id="noData" class="no-data" style="display: none;">
+        No matching records found.
+    </div>
+</div>
+
+<script>
+    // Sample Data (based on WOAH types)
+    const animalData = [
+        {
+            "Species": "Terrestrial",
+            "Category": "Avian",
+            "Disease": "Avian Influenza",
+            "Zoonotic": "Yes",
+            "Trade Impact": "Yes",
+            "Description": "A viral infection affecting birds."
+        },
+        {
+            "Species": "Terrestrial",
+            "Category": "Bovine",
+            "Disease": "Bovine Tuberculosis",
+            "Zoonotic": "Yes",
+            "Trade Impact": "No",
+            "Description": "A bacterial disease affecting cattle."
+        },
+        {
+            "Species": "Aquatic",
+            "Category": "Fish",
+            "Disease": "Viral Hemorrhagic Septicemia",
+            "Zoonotic": "No",
+            "Trade Impact": "Yes",
+            "Description": "A viral disease that affects many species of fish."
+        },
+        {
+            "Species": "Aquatic",
+            "Category": "Amphibians",
+            "Disease": "Chytridiomycosis",
+            "Zoonotic": "No",
+            "Trade Impact": "No",
+            "Description": "A fungal infection affecting amphibians."
+        },
+        {
+            "Species": "Aquatic",
+            "Category": "Molluscs",
+            "Disease": "Bonamiosis (B. exitiosa)",
+            "Zoonotic": "No",
+            "Trade Impact": "Yes",
+            "Description": "A parasitic disease in molluscs caused by Bonamia exitiosa."
+        },
+        {
+            "Species": "Aquatic",
+            "Category": "Molluscs",
+            "Disease": "Bonamiosis (B. ostreae)",
+            "Zoonotic": "No",
+            "Trade Impact": "Yes",
+            "Description": "A parasitic disease in molluscs caused by Bonamia ostreae."
+        },
+        {
+            "Species": "Aquatic",
+            "Category": "Molluscs",
+            "Disease": "Marteiliosis (M. refringens)",
+            "Zoonotic": "No",
+            "Trade Impact": "Yes",
+            "Description": "A parasitic disease in molluscs caused by Marteilia refringens."
+        },
+        {
+            "Species": "Aquatic",
+            "Category": "Molluscs",
+            "Disease": "Perkinsosis (P. marinus)",
+            "Zoonotic": "No",
+            "Trade Impact": "Yes",
+            "Description": "A parasitic disease in molluscs caused by Perkinsus marinus."
+        },
+        {
+            "Species": "Aquatic",
+            "Category": "Molluscs",
+            "Disease": "Perkinsosis (P. olseni)",
+            "Zoonotic": "No",
+            "Trade Impact": "Yes",
+            "Description": "A parasitic disease in molluscs caused by Perkinsus olseni."
+        },
+        {
+            "Species": "Aquatic",
+            "Category": "Molluscs",
+            "Disease": "Withering abalone syndrome (Xenohaliotis californiensis)",
+            "Zoonotic": "No",
+            "Trade Impact": "Yes",
+            "Description": "A bacterial disease causing wasting and death in abalone."
+        }
+        
+        
+        // Add more data as needed based on WOAH website
+    ];
+
+    const speciesTypeFilter = document.getElementById('speciesTypeFilter');
+    const animalCategoryFilter = document.getElementById('animalCategoryFilter');
+    const zoonoticFilter = document.getElementById('zoonoticFilter');
+    const tradeImpactFilter = document.getElementById('tradeImpactFilter');
+    const diseaseFilter = document.getElementById('diseaseFilter');
+    const animalTableBody = document.querySelector('#animalTable tbody');
+    const noDataDiv = document.getElementById('noData');
+
+    // Dynamic categories based on selected species
+    const animalCategories = {
+        Terrestrial: ["Avian", "Bovine", "Swine", "Equine", "Wild Animals", "Sheep and Goat"],
+        Aquatic: ["Fish", "Crustaceans", "Molluscs", "Amphibians"]
+    };
+
+    speciesTypeFilter.addEventListener('change', function() {
+        const species = speciesTypeFilter.value;
+        animalCategoryFilter.innerHTML = '<option value="">-- Select Animal Category --</option>';
+        
+        if (species) {
+            animalCategoryFilter.disabled = false;
+            animalCategories[species].forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                animalCategoryFilter.appendChild(option);
+            });
+        } else {
+            animalCategoryFilter.disabled = true;
+        }
+
+        filterData();
+    });
+
+    // Function to display data in the table
+    function displayData(data) {
+        animalTableBody.innerHTML = '';
+        if (data.length === 0) {
+            noDataDiv.style.display = 'block';
+            return;
+        } else {
+            noDataDiv.style.display = 'none';
+        }
+
+        data.forEach(item => {
+            const row = document.createElement('tr');
+
+            const speciesCell = document.createElement('td');
+            speciesCell.textContent = item["Species"];
+            row.appendChild(speciesCell);
+
+            const categoryCell = document.createElement('td');
+            categoryCell.textContent = item["Category"];
+            row.appendChild(categoryCell);
+
+            const diseaseCell = document.createElement('td');
+            diseaseCell.textContent = item["Disease"];
+            row.appendChild(diseaseCell);
+
+            const zoonoticCell = document.createElement('td');
+            zoonoticCell.textContent = item["Zoonotic"];
+            row.appendChild(zoonoticCell);
+
+            const tradeImpactCell = document.createElement('td');
+            tradeImpactCell.textContent = item["Trade Impact"];
+            row.appendChild(tradeImpactCell);
+
+            const descCell = document.createElement('td');
+            descCell.textContent = item["Description"];
+            row.appendChild(descCell);
+
+            animalTableBody.appendChild(row);
+        });
+    }
+
+    // Initial display
+    displayData(animalData);
+
+    // Function to filter data
+    function filterData() {
+        const speciesValue = speciesTypeFilter.value;
+        const categoryValue = animalCategoryFilter.value;
+        const zoonoticValue = zoonoticFilter.value;
+        const tradeImpactValue = tradeImpactFilter.value;
+        const diseaseValue = diseaseFilter.value.toLowerCase().trim();
+
+        const filteredData = animalData.filter(item => {
+            return (
+                (speciesValue === "" || item["Species"] === speciesValue) &&
+                (categoryValue === "" || item["Category"] === categoryValue) &&
+                (zoonoticValue === "" || item["Zoonotic"] === zoonoticValue) &&
+                (tradeImpactValue === "" || item["Trade Impact"] === tradeImpactValue) &&
+                (diseaseValue === "" || item["Disease"].toLowerCase().includes(diseaseValue))
+            );
+        });
+
+        displayData(filteredData);
+    }
+
+    // Add event listeners to filters
+    speciesTypeFilter.addEventListener('change', filterData);
+    animalCategoryFilter.addEventListener('change', filterData);
+    zoonoticFilter.addEventListener('change', filterData);
+    tradeImpactFilter.addEventListener('change', filterData);
+    diseaseFilter.addEventListener('input', filterData);
+</script>
+
+</body>
+</html>
